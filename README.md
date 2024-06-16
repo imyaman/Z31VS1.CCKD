@@ -2,6 +2,11 @@
 
 https://archive.org/details/zos31_version1
 
+## Screenshots
+
+![](ZOS31_1st.png)
+
+
 ## Starting
 
 SYS0.IPLPARM has 6 members. LOADAU, LOADA0, LOADGK, LOADK2, LOADNZ, LOADZT.

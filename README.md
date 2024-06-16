@@ -12,9 +12,10 @@ If I respond to DSI802A CNM01 with "R 0003, CLOSE DUMP", I won't be able to acce
 ## Shutting down
 
 1. `F CNMPROC,SHUTDOWN` or `%NETV SHUTDOWN`
-2. `d a,l`
-3. `z eod`
-4. `quiesce`
+2. `<stop`
+3. `d a,l`
+4. `z eod`
+5. `quiesce`
 
 I'm not sure if it is right way.
 

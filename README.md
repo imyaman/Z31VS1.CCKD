@@ -16,12 +16,9 @@ If I respond to DSI802A CNM01 with "R 0003, CLOSE DUMP", I won't be able to acce
 
 ## Shutting down
 
-1. `F CNMPROC,SHUTDOWN` or `%NETV SHUTDOWN`
-2. `<stop`
-3. `d a,l`
-4. `z eod`
-5. `quiesce`
+Go to [wiki](https://github.com/imyaman/Z31VS1.CCKD/wiki)
 
-I'm not sure if it is right way.
 
-https://www.ibm.com/docs/ko/zvdt/1.4.x?topic=zvdt-automated-netview 
+## Network
+
+Go to [wiki](https://github.com/imyaman/Z31VS1.CCKD/wiki)

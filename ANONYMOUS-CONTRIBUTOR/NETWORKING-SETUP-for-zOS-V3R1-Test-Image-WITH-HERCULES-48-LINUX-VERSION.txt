@@ -1,0 +1,271 @@
+NETWORKING for z/OS V3R1 Test Image Developer (LINUX VERSION):
+
+
+
+
+1. CREATE & USE THIS MF_31-2.cnf FILE IN THE SAME DIRECTORY WHERE YOU PUT ALL OF YOUR CCKD FILES:
+
+#**********************************************************************************************
+#*****             Init IPL parameters config Operating System z/OS 3.1 VSI               *****
+#**********************************************************************************************
+#***** without this dont work
+ARCHLVL  z/ARCH
+FACILITY ENABLE 006_ASN_LX_REUSE
+FACILITY ENABLE 044_PFPO
+FACILITY ENABLE 080_DFP_PACK_CONV
+FACILITY ENABLE 037_FP_EXTENSION
+FACILITY ENABLE 050_CONSTR_TRANSACT
+FACILITY ENABLE 051_LOCAL_TLB_CLEARING
+FACILITY ENABLE 073_TRANSACT_EXEC
+FACILITY ENABLE 074_STORE_HYPER_INFO
+FACILITY ENABLE 145_INS_REF_BITS_MULT
+
+##FACILITY QUERY ENABLED
+##FACILITY QUERY ALL
+
+**********
+* WARNING execute on command line before IPL/LOADPARM
+* on hercules ---> 'FAC ENA 054' 'FAC ENA 129' 'FAC ENA 130' 'FAC ENA 134' and 'FAC ENA 135'
+*********
+*FACILITY  ENABLE  054       # 054_EE_CMPSC
+*FACILITY  ENABLE  129       # 129_ZVECTOR
+*FACILITY  ENABLE  130       # 130_INSTR_EXEC_PROT
+*FACILITY  ENABLE  134       # 134_ZVECTOR_PACK_DEC
+*FACILITY  ENABLE  135       # 135_ZVECTOR_ENH_1
+***** without this dont work
+
+#CNSLPORT 992
+CNSLPORT 3270      # port to use for x3270 local connections
+
+CODEPAGE  DEFAULT
+CPUMODEL  8562     # CPU model number - Z15
+CPUSERIAL 02B7F8   # CPU serial number - Z15
+MODEL     T02 S03  # STSI returned Hardware model Capacity model - Z15
+CPUVERID  00
+ENGINES   CP
+
+***********
+* IPL DE27
+***********
+LOADPARM  DE28K2M.
+
+#LOG       C:\Users\Public\ZOS111\LOGS\logzOS
+#MODPATH   C:\hercules\sdl-hyperion\msvc.AMD64.bin
+LOG       /data/zos31/LOGS/logzOS
+#MODPATH   /usr/local/hercules/sdl-hyperion/msvc.AMD64.bin
+
+LOGOPT    TIMESTAMP
+
+LPARNAME  VS01
+MAINSIZE  12G
+MANUFACTURER IBM
+MAXCPU    8
+NUMCPU    6
+
+OSTAILOR  z/OS
+PGMPRDOS  LICENSED
+PLANT     02
+SYSEPOCH  1900
+#TZOFFSET  -0300
+TZOFFSET  0
+TIMERINT 400
+CONKPALV (3,1,10)
+
+
+#**********************************************************************************************
+#*****         Reserved area to OS z/OS and products                                      *****
+#**********************************************************************************************
+###########
+#IPL DE27
+###########
+
+DE25 3390   /data/zos31/CICS61.CCKD cu=3990-6
+DE26 3390   /data/zos31/D31VS1.CCKD cu=3990-6
+DE27 3390   /data/zos31/Z31VS1.CCKD cu=3990-6
+DE28 3390   /data/zos31/OPEVS1.CCKD cu=3990-6
+DE29 3390   /data/zos31/STGVS1.CCKD cu=3990-6
+DE2A 3390   /data/zos31/DEVVS1.CCKD cu=3990-6
+DE2B 3390   /data/zos31/IMSV15.CCKD cu=3990-6
+DE2C 3390   /data/zos31/JCKVS1.CCKD cu=3990-6
+DE2D 3390   /data/zos31/JSPVS1.CCKD cu=3990-6
+DE2E 3390   /data/zos31/MQCD93.CCKD cu=3990-6
+DE2F 3390   /data/zos31/PRDVS1.CCKD cu=3990-6
+DE30 3390   /data/zos31/DB2V13.CCKD cu=3990-6
+DE31 3390   /data/zos31/T31VS1.CCKD cu=3990-6
+DE32 3390   /data/zos31/ZFSVS1.CCKD cu=3990-6
+DE33 3390   /data/zos31/USRVS1.CCKD cu=3990-6
+#DE00 3390
+#DE01 3390
+#DE02 3390
+#DE03 3390
+#DE04 3390
+#DE05 3390
+#DE06 3390
+#DE07 3390
+#DE08 3390
+#DE09 3390
+#DE0A 3390
+#DE0B 3390
+#DE0C 3390
+#DE0D 3390
+#DE0E 3390
+#DE0F 3390
+
+
+#**********************************************************************************************
+#*****       LCS Adapters with z/OS                                                       *****
+#**********************************************************************************************
+#****0E20.2 LCS -n 192.168.43.35 192.168.43.225
+#0E20.2 LCS -n 192.168.1.54 192.168.1.
+## FIRST IPADDR IS THE WINDOWS PC, SECOND IS Z/OS
+# 0E20.2 LCS --dev 192.168.1.51 192.168.1.52
+
+#***********************************************************************
+#*name  awsosa  0009    --path=A0       --pathtype=OSD  --tunnel_intf=y
+#*device        1500    osa     osa     --unitadd=0
+#*device        1501    osa     osa     --unitadd=1
+#*device        1502    osa     osa     --unitadd=2
+#*device        1503    osa     osa     --unitadd=3
+#**********************************************************************
+#1500.3 QETH iface /dev/net/tun iface 192.168.100.99 ipaddr 192.168.100.150 netmask 255.255.255.0 hwaddr 02-00-00-11-10-04 mtu 1500
+#1500.3 QETH iface 3C-64-CF-BE-8B-5A ipaddr 192.168.1.54/24 netmask 255.255.255.0 hwaddr 02-00-00-11-10-00 mtu 1500 chpid F0
+
+1500.3 QETH ifname tun0 ipaddr 192.168.100.1 netmask 255.255.255.0 hwaddr 02-00-00-11-10-04 mtu 1500 chpid F0
+
+#**********************************************************************************************
+#*****                 Master (0060) and terms 3270 (0061)                                *****
+#**********************************************************************************************
+#** dont change original DEVMAP parameters
+#**name    aws3274 0002    #define a few 3270 terminals
+#**---> device  0060    3279    3274    mstcon  <-----
+#**---> device  0061    3279    3274    tso1    <-----
+#**
+
+0060    3270
+0061    3270
+
+#****************
+#**********************************************************************************************
+#*****             Fim da carga de parametros do arquivo de configuracao                  *****
+#**********************************************************************************************
+
+script /data/zos31/IPL31.rc
+
+
+
+
+2. INSTALL x3270 FROM APPROPRIATE PACKAGES FOR YOUR LINUX
+
+
+
+
+3.  CREATE THIS 'startconsole' bash script in of /usr/local/bin with execute permissions
+
+#!/bin/bash
+
+# adjust sleep seconds to your particular linux server needs
+sleep 15
+nohup x3270 -port 3270 -model 3279-3 127.0.0.1 > /dev/null 2>&1 &
+sleep 2
+nohup x3270 -port 3270 -model 3279-3 127.0.0.1 > /dev/null 2>&1 &
+
+
+
+
+4.  CREATE THIS 'startherc' bash script in /usr/local/bin with execute permissions  (modify hercules line to the pathing location of CCKD files)
+
+#!/bin/bash
+
+echo "1" > /proc/sys/net/ipv4/ip_forward
+nohup /usr/local/bin/startconsole > /dev/null 2>&1 &
+hercules -f /data/zos31/MF_31-2.cnf --rcfile=/data/zos31/IPL31.rc --verbose
+
+
+
+
+5.  INSTALL 'tunctl' FROM APPROPRIATE PACKAGES FOR YOUR LINUX
+
+
+
+
+6.  CREATE 'LOGS' DIRECTORY IN THE DIRECTORY WHERE YOUR CCKD FILES ARE LOCATED.
+
+
+  
+
+7.  EXECUTE /usr/local/bin/startherc file
+
+
+
+
+8.  ONCE THE TWO x3270 terminals come up, type 'ipl DE27' in the hercules window 
+
+
+
+9.  ONCE THE 'tunctl' GETS LOADED AUTOMATICALLY BY HERCULES (I THINK ITS THE 'hercifc' PROGRAM) (YOU WILL NOTICE IT STARTUP IN HERCULES WINDOW) YOU SHOULD BE ABLE TO USE A TN3270 CLIENT TO ACCESS THE INSTANCE AT 192.168.1.150 PORT 23 (PROVIDED YOU  HAVE A ROUTE SETUP ON YOUR NETWORK ROUTER TO ROUTE TRAFFIC TO THE 192.168.100.0 NETWORK   
+
+EXAMPLE:
+Routing Table
+Destination	Gateway	                        		Netmask	        Metric	
+192.168.100.0	<ip address of Linux server ethernet card>	255.255.255.0	0	
+
+
+
+
+10.  ONCE LOGGED IN USING 'IBMUSER' ACCOUNT (tso ibmuser) (AND AFTER INITIAL PASSWORD CHAANGE FROM 'welcome0welcome0'), USE ISPF MENU OPTION 2 TO EDIT DSNAME 'K2.PARMLIB(IEASYMK2)' AND CHANGE APPROPRIATE SYSTEM SYMBOLS AND SAVE OUT OF EDITOR
+
+- MODIFY THE FOLLOWING PARAMETERS AS SUCH (SUBSTITUTING YOUR NAMESERVER IP ADDRESS AND DOMAIN WHERE APPROPRIATE):
+
+  SYMDEF(&TCPHOSTNAME_.='VS01')               
+  SYMDEF(&NAMESERVERADDR1.='<nameserver ip address>')   
+  SYMDEF(&TCPDOMAIN_.='<domain name>')          
+
+
+
+11. RE-IPL   (EASIEST WAY IS TO JUST KILL THE TWO x3270 TERMINALS AND TYPE 'exit' IN THE HERCULES WINDOW - THEN REBOOT YOUR LINUX SERVER AND REPEAT STEPS #7 &#8.  
+
+
+
+
+12. TEST BY CONNECTING VIA TN3270 CLIENT AND AT THE ISPF OPTION LINE TRY TO NSLOOKUP AN ADDRESS THAT YOUR NAMESERVER WOULD KNOW ABOUT -- TYPE  'tso nslookup <ipaddress or name>'   -- YOU SHOULD SEE THE RESOLVED NAME/IP  AT THE BOTTOM OF THE TN3270 SESSION.
+
+
+
+
+13. GO TO OMVS (=13.15)
+
+
+
+
+14.  sed -e 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config > sshd_config.txt
+
+
+
+
+15.  cat sshd_config.txt > /etc/ssh/sshd_config
+
+
+
+
+16.  GO TO SDSF (=13.14) AND TYPE '/' AT THE COMMAND INPUT PROMPT -  IN SYSTEM COMMAND EXTENSION POPUP - TYPE 'C SSHD6'  <ENTER> THEN DO THE '/' AT THE COMMAND PROMPT TO GET BACK TO THE SYSTEM COMMAND EXTENSION POPUP - TYPE 'S SSHD' <ENTER>  (THIS WILL RESTART THE SSHD)
+
+
+
+
+15.  USE AN SSH CLIENT ON YOUR NETWORK TO GO TO 192.168.100.150 ON PORT 22
+
+
+
+
+16.  TRY LOGGING IN AS 'ibmuser'
+
+
+
+
+
+
+
+
+
+
+

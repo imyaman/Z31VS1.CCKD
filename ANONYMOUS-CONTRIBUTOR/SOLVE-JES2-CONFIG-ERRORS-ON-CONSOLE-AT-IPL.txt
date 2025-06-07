@@ -1,0 +1,77 @@
+
+Messages in red on console:
+VS01 STC00007 *HZS0003E CHECK(IBMJES2,JES2_CKPT_CONFIG_N1):
+     *IAZH123E One or more checkpoints or new checkpoints are not defined.
+VS01 STC00007 *HZS0003E CHECK(IBMJES2,JES2_CKPT_CONFIG_N1):
+     *IAZH124E Only one checkpoint is currently in use.
+VS01 STC00007 *HZS0003E CHECK(IBMJES2,JES2_CKPT_CONFIG_N1):
+     *IAZH128E Operator verification is enabled.
+
+
+from console:  $D CKPTDEF
+
+RESPONSE=VS01                                                    
+ $HASP829 CKPTDEF                                                
+ $HASP829 CKPTDEF  CKPT1=(DSNAME=VSPROV.VS01.HASCKPT1,           
+ $HASP829          VOLSER=JCKVS1,INUSE=YES,VOLATILE=NO),         
+ $HASP829          CKPT2=(DSNAME=,VOLSER=,INUSE=NO),             
+ $HASP829          NEWCKPT1=(DSNAME=,VOLSER=),NEWCKPT2=(DSNAME=, 
+ $HASP829          VOLSER=),MODE=DUPLEX,DUPLEX=OFF,LOGSIZE=1,    
+ $HASP829          VERSIONS=(STATUS=ACTIVE,NUMBER=50,WARN=80,    
+ $HASP829          MAXFAIL=0,NUMFAIL=0,VERSFREE=49,MAXUSED=1),   
+ $HASP829          RECONFIG=NO,VOLATILE=(ONECKPT=WTOR,           
+ $HASP829          ALLCKPT=WTOR),OPVERIFY=YES                    
+
+
+=3.4 (DSLIST) DSNAME LEVEL: VSPROV.VS01.HASCKPT1   VOLUME SERIAL: JCKVS1
+S FOR DATASET INFO
+
+Data Set Name . . . . : VSPROV.VS01.HASCKPT1                           
+                                                                       
+General Data                          Current Allocation               
+ Management class . . : **None**       Allocated cylinders : 450       
+ Storage class  . . . : **None**       Allocated extents . : 1         
+  Volume serial . . . : JCKVS1                                         
+  Device type . . . . : 3390                                           
+ Data class . . . . . : **None**                                       
+  Organization  . . . : PSU           Current Utilization              
+  Record format . . . : U              Used cylinders  . . : 0         
+  Record length . . . : 0              Used extents  . . . : 0         
+  Block size  . . . . : 0                                              
+  1st extent cylinders: 450                                            
+  Secondary cylinders : 0             Dates                            
+  Data set name type  :                Creation date . . . : 2021/07/15
+  Data set encryption : NO             Referenced date . . : 2025/06/05
+                                       Expiration date . . : ***None***         
+
+ENTER AND RUN THIS JCL:   (I COULDN'T FIGURE OUT HOW TO SUCCESSFULLY GET THE DSORG TO BE PSU - SO USING PS - WORKS FINE)
+
+//ALLOCATE JOB  'ALLOC CKPT',MSGLEVEL=(1,1),             
+//   CLASS=A,MSGCLASS=H,NOTIFY=&SYSUID,REGION=0M
+//ALLOCAT  EXEC PGM=IEFBR14
+//CHECK2   DD   DSN=VSPROV.VS01.HASCKPT2,UNIT=3390,
+//              VOL=SER=STGVS1,DISP=(NEW,KEEP),
+//              SPACE=(CYL,450),STORCLAS=SCNOSMS,
+//              DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0)
+//NEWCK1  DD DSN=VSPROV.VS01.NEWCKPT1,UNIT=3390,    
+//           VOL=SER=STGVS1,DISP=(NEW,KEEP),        
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0)       
+//NEWCK2  DD DSN=VSPROV.VS01.NEWCKPT2,UNIT=3390,    
+//           VOL=SER=JCKVS1,DISP=(NEW,KEEP),        
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,       
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0)
+/*
+//
+
+=2 (EDIT)  DSNAME:  K2.PARMLIB(JES2PARM)
+                                               
+ 000017 CKPTDEF CKPT1=(DSN=VSPROV.VS01.HASCKPT1,VOL=&J2CKVL1.,INUSE=YES),  
+ 000018         CKPT2=(DSN=VSPROV.VS01.HASCKPT2,VOL=STGVS1,INUSE=YES),     
+ 000019         NEWCKPT1=(DSN=VSPROV.VS01.NEWCKPT1,VOL=STGVS1),            
+ 000020         NEWCKPT2=(DSN=VSPROV.VS01.NEWCKPT2,VOL=&J2CKVL1.),          
+ 000021         MODE=DUPLEX,                                               
+ 000022         DUPLEX=ON,                                                 
+ 000023         LOGSIZE=1,
+ 000024         OPVERIFY=NO    
+                                                                                      

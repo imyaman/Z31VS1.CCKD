@@ -1,0 +1,8 @@
+#!/bin/bash
+
+####  Hercules executable must be in the PATH - else modify that line to preface the command
+####  modify path to the CCKD files (where MF_31-2.cnf and IPL31.rc are or should be)
+
+echo "1" > /proc/sys/net/ipv4/ip_forward
+nohup /usr/local/bin/startconsole > /dev/null 2>&1 &
+hercules -f /data/zos31/MF_31-2.cnf --rcfile=/data/zos31/IPL31.rc --verbose 

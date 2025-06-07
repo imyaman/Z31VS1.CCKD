@@ -1,0 +1,360 @@
+RE-INITIALIZING LOGREC DATASET
+
+
+
+MESSAGE ON CONSOLE:
+
+*IFB081I LOGREC DATA SET IS FULL,13.36.50,
+*        DSN=VSPROV.VS01.LOGREC
+
+
+
+=3.4  DSNAME LEVEL: VSPROV.VS01.LOGREC     (S FOR SHORT INFO)
+                                                                    More:     
+ Data Set Name . . . . : VSPROV.VS01.LOGREC                                   
+                                                                              
+ General Data                          Current Allocation                     
+  Management class . . : **None**       Allocated cylinders : 5               
+  Storage class  . . . : **None**       Allocated extents . : 1               
+   Volume serial . . . : OPEVS1                                               
+   Device type . . . . : 3390                                                 
+  Data class . . . . . : **None**                                             
+   Organization  . . . : PSU           Current Utilization                    
+   Record format . . . : U              Used cylinders  . . : 5               
+   Record length . . . : 0              Used extents  . . . : 1               
+   Block size  . . . . : 1944                                                 
+   1st extent cylinders: 5                                                    
+   Secondary cylinders : 0             Dates                                  
+   Data set name type  :                Creation date . . . : 2021/07/15      
+   Data set encryption : NO             Referenced date . . : 2024/03/11      
+                                        Expiration date . . : ***None***      
+
+
+RUN FOLLOWING JOB TO RE-INITIALIZE THE LOGREC DATASET:
+
+//INSERLOG  JOB  'REINIT LOGREC',MSGLEVEL=(1,1),    
+//    CLASS=A,MSGCLASS=H,NOTIFY=&SYSUID             
+//STEP1     EXEC PGM=IFCDIP00                       
+//SERERDS   DD DSN=VSPROV.VS01.LOGREC,UNIT=3390,    
+//          VOL=SER=OPEVS1,DISP=SHR                 
+//SYSPRINT  DD SYSOUT=H                             
+/*                                                  
+//                                                  
+
+---- NOTIFICATION ON THE CONSOLE SHOULD DISAPPEAR AFTER JOB IS RUN
+
+
+------------------------------------------------------------------------------------------------
+
+
+IF YOUR CONSOLE IS GETTING MESSAGES LIKE THIS:
+
+     *08.36.23 VS01          *IFA724E UNABLE TO WRITE TO LOGSTREAM
+     * IFASMF.VS01.DATA
+     *DATA CURRENTLY BEING BUFFERED. IXGWRITE RC=08-085D. TIME=08.36.23
+     *08.38.15 VS01 STC00025 *ALL DEFINED SUBSYSTEMS HAVE BEEN STARTED
+     *10.33.55 VS01 STC00006 *HZS0003E CHECK(IBMXCF,XCF_CDS_SPOF):
+     *IXCH0242E One or more couple data sets have a single point of failure.
+       LOG STREAM
+      IFASMF.VS01.DATA IN STRUCTURE *NOT APPLICABLE*.  RETURN CODE: 00000008
+      REASON CODE: 00000805  DIAG1: 00000004  DIAG2: 00004379  DIAG3:
+  00  0107001B  DIAG4: 00000000
+
+
+AND FILES LIKE THIS EXIST:
+
+ IXGLOGR.IFASMF.VS01.DATA.A0001335         
+ IXGLOGR.IFASMF.VS01.DATA.A0001335.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001336         
+ IXGLOGR.IFASMF.VS01.DATA.A0001336.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001337         
+ IXGLOGR.IFASMF.VS01.DATA.A0001337.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001338         
+ IXGLOGR.IFASMF.VS01.DATA.A0001338.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001339         
+ IXGLOGR.IFASMF.VS01.DATA.A0001339.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001340         
+ IXGLOGR.IFASMF.VS01.DATA.A0001340.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001341         
+ IXGLOGR.IFASMF.VS01.DATA.A0001341.DATA    
+ IXGLOGR.IFASMF.VS01.DATA.A0001342         
+.
+.
+.
+THROUGH A0001359
+
+
+--- RUN FOLLOWING JOB TO LIST OUT THE LOGSTREAM & VIEW DEFINITION SETTINGS:
+
+//LISTLOG JOB 'LIST LOG',MSGLEVEL=(1,1),             
+//   CLASS=A,MSGCLASS=H,NOTIFY=&SYSUID,REGION=0M     
+//LIST1   EXEC PGM=IXCMIAPU                          
+//SYSPRINT  DD SYSOUT=*                              
+//SYSIN   DD *                                       
+  DATA TYPE (LOGR) REPORT(YES)                       
+  LIST LOGSTREAM NAME(IFASMF.VS01.DATA) DETAIL(YES)  
+/*                                                   
+//                                                   
+
+
+--- FROM z/OS CONSOLE:       SETLOGR FORCE,DISConnect,LSName=IFASMF.VS01.DATA
+
+
+--- RUN THE FOLLOWING JOB TO DELETE THE LOGSTREAM:
+
+//DELLGSTR   JOB 'DELETE LOGSTR',MSGLEVEL=(1,1), 
+//   CLASS=A,MSGCLASS=H,NOTIFY=&SYSUID           
+//DEL1 EXEC  PGM=IXCMIAPU                        
+//SYSPRINT  DD SYSOUT=*                          
+//SYSIN     DD *                                 
+ DATA TYPE(LOGR)                                 
+ DELETE LOGSTREAM NAME(IFASMF.VS01.DATA)         
+/*                                               
+//                                               
+
+
+--- RUN THE FOLLOWING JOB TO REDEFINE LOGSTREAM:
+
+
+//DEFLGSTR   JOB 'DEFINE LOGSTR',MSGLEVEL=(1,1),  
+//   CLASS=A,MSGCLASS=H,NOTIFY=&SYSUID            
+//DEF1 EXEC  PGM=IXCMIAPU                         
+//SYSPRINT  DD SYSOUT=*                           
+//SYSIN     DD *                                  
+ DATA TYPE(LOGR) REPORT(YES)                      
+ DEFINE LOGSTREAM NAME(IFASMF.VS01.DATA)          
+ DASDONLY(YES)                                    
+ MAXBUFSIZE(65532)                                
+ STG_SIZE(2500)                                   
+ LS_SIZE(2500)                                    
+ HLQ(IXGLOGR)                                     
+ MODEL(NO)                                        
+ LOWOFFLOAD(40)                                   
+ HIGHOFFLOAD(80)                                  
+ STG_DUPLEX(YES)                                  
+ DUPLEXMODE(UNCOND)                               
+ RETPD(3)            
+ AUTODELETE(YES)     
+ OFFLOADRECALL(YES)  
+ DIAG(NO)            
+/*                   
+//                   
+
+
+--- RE-RUN LISTLOG JOB AGAIN TO SEE DIFFERENCE - ALSO =3.4  DSNAME LEVEL: IXGLOGR.IFASMF.VS01    (THIS SHOULD JUST SHOW ONE VSAM FILE CLUSTER RATHER THAN 25 AS WAS ORIGINALLY THE CASE)
+
+--- RE-IPL 
+
+
+BELOW IS WHAT THE LISTLOG JOB OUTPUT WOULD LOOK LIKE WHEN INITIALLY RUN:
+
+________________________________________________________________________________
+                                                                                
+LINE #     CONTROL CARDS                                                        
+                                                                                
+     1      DATA TYPE (LOGR) REPORT(YES)                                        
+     2      LIST LOGSTREAM NAME(IFASMF.VS01.DATA) DETAIL(YES)                   
+ADMINISTRATIVE DATA UTILITY:  MESSAGES                     DATA TYPE = LOGR     
+________________________________________________________________________________
+                                                                                
+ LOGSTREAM NAME(IFASMF.VS01.DATA) STRUCTNAME() LS_DATACLAS()                  
+           LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(2500)   
+           STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(2500)        
+           LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+           RMNAME() DESCRIPTION() RETPD(3) AUTODELETE(YES) OFFLOADRECALL(YES) 
+           DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+           MAXBUFSIZE(65532)                                                  
+                                                                              
+                                                                              
+      LOG STREAM ATTRIBUTES:                                                  
+                                                                              
+        User Data:                                                            
+          0000000000000000000000000000000000000000000000000000000000000000    
+          0000000000000000000000000000000000000000000000000000000000000000    
+                                                                              
+                                                                                         
+                                                                               
+      LOG STREAM CONNECTION INFO:                                              
+                                                                               
+        SYSTEMS CONNECTED: 1                                                   
+                                                                               
+        SYSTEM    STRUCTURE         CON CONNECTION  CONNECTION                 
+        NAME      VERSION           ID  VERSION     STATE                      
+        --------  ----------------  --  ----------  ----------                 
+        VS01      0000000000000000  00  00000000    N/A                        
+                                                                               
+                                                                               
+      LOG STREAM DATA SET INFO:                                                
+                                                                               
+        STAGING DATA SET NAMES: IXGLOGR.IFASMF.VS01.DATA.<SUFFIX>              
+                                                                               
+        DATA SET NAMES:                                                        
+        -------------------------------------------- 
+          IXGLOGR.IFASMF.VS01.DATA.LOCAL                                        
+                                                                                
+           NUMBER OF STAGING DATA SETS: 1                                       
+                                                                                
+          DATA SET NAMES IN USE: IXGLOGR.IFASMF.VS01.DATA.<SEQ#>                
+                                                                                
+          Ext.   <SEQ#>    Lowest Blockid /  Highest GMT /      Highest Local / 
+                           Highest Blockid   Highest RBA        System Name     
+          -----  --------  ----------------  -----------------  ----------------
+         *00001  A0001335  0000000333B9C8D2  06/03/25 20:01:10  06/03/25 16:01:1
+                           0000000334568003  009D54B1           VS01            
+                 A0001336  0000000334571D83  06/03/25 20:03:29  06/03/25 16:03:2
+                           0000000334F3EB81  009D74DF           VS01            
+ADMINISTRATIVE DATA UTILITY:  REPORT                       DATA TYPE = LOGR     
+________________________________________________________________________________
+
+                 A0001337  0000000334F49262  06/03/25 20:29:24  06/03/25 16:29:2
+                           000000033590E3BD  009D11BD           VS01            
+                 A0001338  000000033591A41F  06/03/25 20:33:34  06/03/25 16:33:3
+                           00000003362E5E58  009D5E96           VS01            
+                 A0001339  00000003362F02B5  06/03/25 20:51:24  06/03/25 16:51:2
+                           0000000336CB9D02  009CD831           VS01            
+                 A0001340  0000000336CBDAE6  06/03/25 21:19:16  06/03/25 17:19:1
+                           000000033768357D  009D226D           VS01            
+                 A0001341  000000033768FD53  06/03/25 21:55:17  06/03/25 17:55:1
+                           0000000338054E06  009CF5CF           VS01            
+                 A0001342  000000033805F322  06/03/25 21:58:00  06/03/25 17:58:0
+                           0000000338A278F2  009D46A1           VS01            
+                 A0001343  0000000338A339C3  06/03/25 22:17:20  06/03/25 18:17:2
+                           00000003393F6AC2  009CF7B1           VS01            
+                 A0001344  0000000339403174  06/03/25 22:34:05  06/03/25 18:34:0
+                           0000000339DCFCA1  009D7249           VS01            
+                 A0001345  0000000339DDA3BD  06/03/25 22:41:35  06/03/25 18:41:3
+                           000000033A79E462  009CE904           VS01            
+                 A0001346  000000033A7A8CC1  06/03/25 23:08:20  06/03/25 19:08:2
+                           000000033B169B58  009CD919           VS01            
+                 A0001347  000000033B1765DA  06/03/25 23:38:30  06/03/25 19:38:3
+                           000000033BB3FFD4  009D5F4E           VS01            
+                 A0001348  000000033BB4C528  06/04/25 00:08:10  06/03/25 20:08:1
+                           000000033C50DA78  009CD56E           VS01            
+                 A0001349  000000033C519A96  06/04/25 00:34:17  06/03/25 20:34:1
+                           000000033CEE3A9A  009D4720           VS01            
+                 A0001350  000000033CEEE1B6  06/04/25 00:38:13  06/03/25 20:38:1
+                           000000033D8B9973  009D7C22           VS01            
+                 A0001351  000000033D8C5DD8  06/04/25 01:14:11  06/03/25 21:14:1
+                           000000033E2935A0  009D579F           VS01            
+                 A0001352  000000033E29B577  06/04/25 01:16:44  06/03/25 21:16:4
+                           000000033EC6703B  009D61E0           VS01            
+                 A0001353  000000033EC71757  06/04/25 01:31:42  06/03/25 21:31:4
+                           000000033F63454A  009CE7AB           VS01            
+                 A0001354  000000033F63FF02  06/04/25 02:00:52  06/03/25 22:00:5
+                           0000000340000E57  009CCEE9           VS01            
+                 A0001355  000000034000CDEB  06/04/25 02:30:30  06/03/25 22:30:3
+                           00000003409D2FBF  009D270C           VS01            
+                 A0001356  00000003409DF4F7  06/04/25 03:01:30  06/03/25 23:01:3
+                           00000003413A9CE2  009D6C3B           VS01            
+                 A0001357  00000003413B6132  06/04/25 03:31:46  06/03/25 23:31:4
+                           0000000341D7C388  009D2C3C           VS01            
+                 A0001358  0000000341D88D6E  06/04/25 04:01:27  06/04/25 00:01:2
+                           00000003427482C4  009CC08C           VS01            
+                 A0001359  0000000342754DFA  06/04/25 04:32:28  06/04/25 00:32:2
+                           00000003431174A2  009CECB2           VS01            
+                                                                                
+          NUMBER OF DATA SETS IN LOG STREAM: 25                                 
+                                                                                
+                                                                                
+ADMINISTRATIVE DATA UTILITY:  REPORT                       DATA TYPE = LOGR     
+________________________________________________________________________________
+                                                                               
+        POSSIBLE ORPHANED LOG STREAM DATA SETS:                                
+                                                                               
+           NUMBER OF POSSIBLE ORPHANED LOG STREAM DATA SETS: 0                 
+                                                                               
+LOGR Inventory Record Summary:                                                 
+                                                                               
+                                                                               
+LOGR COUPLE DATA SET FORMAT LEVEL: HBB6603                                     
+                                                                               
+ /* Functional Items:  */                                                      
+ /* SMDUPLEX(0)   */                                                           
+                                                                               
+                                                                               
+Type                             Formatted              In-use                 
+-------------------              ---------              ------                 
+                                                                               
+LSR (Log Stream)                       25                    9                 
+                                                                                
+LSTRR (Structure)                      15                    0                  
+                                                                                
+DSEXTENT (Data Set Extent)             15                    0                  
+                                                                                
+   LOGSTREAM NAME(ATR.VS01.DELAYED.UR) STRUCTNAME() LS_DATACLAS()               
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(6144)   
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(6144)        
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(7) AUTODELETE(YES) OFFLOADRECALL(YES) 
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(65532)                                                  
+                                                                                
+   LOGSTREAM NAME(ATR.VS01.MAIN.UR) STRUCTNAME() LS_DATACLAS()                  
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(2500)   
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(2500)        
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(7) AUTODELETE(YES) OFFLOADRECALL(YES) 
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(65532)                                                  
+                                                                                
+   LOGSTREAM NAME(ATR.VS01.RESTART) STRUCTNAME() LS_DATACLAS()                  
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(7168)   
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(7168)        
+             LOWOFFLOAD(20) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(7) AUTODELETE(YES) OFFLOADRECALL(YES) 
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(65532)                                                  
+                                                                                
+   LOGSTREAM NAME(ATR.VS01.RM.DATA) STRUCTNAME() LS_DATACLAS()                  
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(2500)   
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(2500)        
+             LOWOFFLOAD(20) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+ADMINISTRATIVE DATA UTILITY:  REPORT                       DATA TYPE = LOGR     
+________________________________________________________________________________
+                                                                                
+                                                                                
+                                                                                
+             RMNAME() DESCRIPTION() RETPD(0) AUTODELETE(NO) OFFLOADRECALL(YES)  
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(64000)                                                  
+                                                                                
+   LOGSTREAM NAME(CICSUSER.CICSTS61.DFHLOG) STRUCTNAME() LS_DATACLAS()          
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(0)      
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(3000)        
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(0) AUTODELETE(NO) OFFLOADRECALL(YES)  
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(64000)                                                  
+                                                                                
+   LOGSTREAM NAME(CICSUSER.CICSTS61.DFHSHUNT) STRUCTNAME() LS_DATACLAS()        
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(0)      
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(500)         
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(0) AUTODELETE(NO) OFFLOADRECALL(YES)  
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(64000)                                                  
+                                                                                
+   LOGSTREAM NAME(IFASMF.VS01.DATA) STRUCTNAME() LS_DATACLAS()                  
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(NO) LS_SIZE(2500)   
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(2500)        
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(3) AUTODELETE(YES) OFFLOADRECALL(YES) 
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(65532)                                                  
+                                                                                
+   LOGSTREAM NAME(VS01.DFHLOG.MODEL) STRUCTNAME() LS_DATACLAS()                 
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(YES) LS_SIZE(0)     
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(3000)        
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(0) AUTODELETE(NO) OFFLOADRECALL(YES)  
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(64000)                                                  
+                                                                                
+   LOGSTREAM NAME(VS01.DFHSHUNT.MODEL) STRUCTNAME() LS_DATACLAS()               
+             LS_MGMTCLAS() LS_STORCLAS() HLQ(IXGLOGR) MODEL(YES) LS_SIZE(0)     
+             STG_MGMTCLAS() STG_STORCLAS() STG_DATACLAS() STG_SIZE(500)         
+             LOWOFFLOAD(40) HIGHOFFLOAD(80) STG_DUPLEX(YES) DUPLEXMODE(UNCOND)  
+             RMNAME() DESCRIPTION() RETPD(0) AUTODELETE(NO) OFFLOADRECALL(YES)  
+             DASDONLY(YES) DIAG(NO) LOGGERDUPLEX() EHLQ(NO_EHLQ) GROUP()        
+             MAXBUFSIZE(64000)                                                  
+******************************** BOTTOM OF DATA ********************************

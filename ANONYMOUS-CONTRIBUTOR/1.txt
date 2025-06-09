@@ -1,0 +1,100 @@
+FROM THE CONSOLE:  D OMVS,FILE  
+COMPARE WITH CONTENTS OF SYS1.PARMLIB(BPXPRM00) AND SYS1.PARMLIB(BPXPRM01)
+
+CAUSE OF PROBLEM:  THE DEFINED MOUNT OF ZOAU.V1R1M0.ZFS ON /usr/lpp/IBM/zoautil FROM THE SYS1.PARMLIB(BPXPRM00) MEMBER IS NOT ACTUALLY IN THE 'D OMVS FILE' OUTPUT 
+(THIS IS THE IBM Z Open Automation Utilities (ZOAU))
+
+THE ZFS DATA SET ACTUALLY EXISTS
+
+ Data Set Name . . . . : ZOAU.V1R1M0.ZFS.DATA                              
+                                                                           
+ General Data                          Current Allocation                  
+  Management class . . : **None**       Allocated cylinders : 67           
+  Storage class  . . . : **None**       Allocated extents . : 1            
+   Volume serial . . . : PRDVS1                                            
+   Device type . . . . : 3390                                              
+  Data class . . . . . : **None**                                          
+   Organization  . . . : VS            Current Utilization                 
+   Record format . . . : ?              Used cylinders  . . : ?            
+   Record length . . . : ?              Used extents  . . . : ?            
+   Block size  . . . . : ?                                                 
+   1st extent cylinders: 67                                                
+   Secondary cylinders : 7             Dates                               
+   Data set name type  :                Creation date . . . : 2024/02/28   
+   Data set encryption : NO             Referenced date . . : 2024/03/21   
+                                        Expiration date . . : ***None***                                             
+
+
+WORKAROUND, COMMENT OUT STANZA FOR IT IN SYS1.PARMLIB(BPXPRM00)
+
+000179 /*   MOUNT FILESYSTEM('ZOAU.V1R1M0.ZFS')                            */ 
+000180 /*         TYPE(ZFS)                                                */  
+000181 /*         MODE(READ)                                               */  
+000182 /*         MOUNTPOINT('/usr/lpp/IBM/zoautil')                       */  
+000183 /*         UNMOUNT                                                  */  
+
+
+WHEN YOU RE-IPL, THE MESSAGE:
+
+     *13.38.43 VS01 STC00005 *HZS0003E CHECK(IBMUSS,USS_PARMLIB_MOUNTS):
+     *BPXH061E One or more file systems specified in the BPXPRMxx parmlib
+     *members are not mounted.
+
+NO LONGER APPEARS
+
+
+TO RESEARCH FURTHER........
+
+MAKE ANOTHER UNIX SYSTEM SERVICES MOUNTPOINT SOMEWHERE YOU CAN CREATE A DIRECTORY
+
+IN =13.15 (OMVS):   mkdir /var/test
+
+IN TSO:   MOUNT FILESYSTEM('ZOAU.V1R1M0.ZFS') MOUNTPOINT('/var/test') TYPE(ZFS) MODE(READ)     
+
+IN =13.15 (OMVS):  cd /var/test ; ls -al
+
+drwxr-xr-x   8 487      2611        8192 Apr 25  2022 .                        
+drwxrwxrwt  22 487      2611        8192 Jun  8 11:04 ..                       
+drwxr-xr-x   2 BPXROOT  2611        8192 Apr 25  2022 IBM                      
+drwxr-xr-x   2 BPXROOT  1894        8192 Mar 26  2021 bin                      
+drwxr-xr-x   2 BPXROOT  1894        8192 Jan 26  2021 conf                     
+drwxr-xr-x   3 BPXROOT  1894        8192 Jan 26  2021 docs                     
+drwxr-xr-x   2 BPXROOT  1894        8192 Mar 26  2021 include                  
+drwxr-xr-x   3 BPXROOT  1894        8192 Mar 25  2022 lib                      
+-rwxr-xr-x   1 BPXROOT  1894       40216 Mar 23  2021 zoautil_py-1.1.1.tar.gz  
+
+
+FOR COMPARISON...
+IN =13.15 (OMVS):  cd /usr/lpp/IBM/zoautil ; ls -al
+
+drwxr-xr-x   2 BPXROOT  2611        8192 Feb 23  2024 IBM                       
+drwxr-xr-x   4 BPXROOT  1894        8192 Feb  6  2024 LICENSES                  
+-rw-r--r--   1 BPXROOT  1894         358 Feb  6  2024 README.txt                
+drwxr-xr-x   2 BPXROOT  1894        8192 Feb  6  2024 bin                       
+drwxr-xr-x   2 BPXROOT  1894           0 Feb  6  2024 conf                      
+drwxr-xr-x   3 BPXROOT  1894        8192 Feb  6  2024 docs                      
+drwxr-xr-x   2 BPXROOT  1894        8192 Feb  6  2024 include                   
+drwxr-xr-x   6 BPXROOT  1894        8192 Feb  6  2024 lib                       
+drwxr-xr-x   3 BPXROOT  1894        8192 Feb  6  2024 samples                   
+-rw-r--r--   1 BPXROOT  1894      118681 Feb  6  2024 zoautil_py-1.2.5.4-cp310-n
+one-any.whl                                                                     
+-rw-r--r--   1 BPXROOT  1894       89645 Feb  6  2024 zoautil_py-1.2.5.4-cp311-n
+one-any.whl                                                                     
+-rw-r--r--   1 BPXROOT  1894       89839 Feb  6  2024 zoautil_py-1.2.5.4-cp312-n
+one-any.whl                                                                     
+-rw-r--r--   1 BPXROOT  1894      118521 Feb  6  2024 zoautil_py-1.2.5.4-cp39-no
+ne-any.whl                                                                      
+-rw-r--r--   1 BPXROOT  1894       82735 Feb  6  2024 zoautil_py-1.2.5.4.tar.gz 
+drwxr-xr-x   3 BPXROOT  1894        8192 Feb  6  2024 zoautil_py-stubs          
+
+
+IN =13.15 (OMVS): /var/test/bin/zoaversion                     
+2024/02/06 21:30:15 CUT V1.2.5.4 fc9ecceb 4766 PH59327 1113 a7237818     
+                                             
+IN =13.15 (OMVS): /usr/lpp/IBM/zoautil/bin/zoaversion          
+2024/02/06 21:30:15 CUT V1.2.5.4 fc9ecceb 4766 PH59327 1113 a7237818     
+                                              
+
+FIGURE OUT WHAT YOU WANT TO KEEP.  SEEMS LIKE THEY ARE THE EXACT SAME VERSION AND WHAT IS ALREADY IN THE /usr/lpp/IBM/zoautil PATH HAS SOME SAMPLES AND A README.txt. (A BIT MORE COMPLETE MAYBE?)
+
+                                                                     

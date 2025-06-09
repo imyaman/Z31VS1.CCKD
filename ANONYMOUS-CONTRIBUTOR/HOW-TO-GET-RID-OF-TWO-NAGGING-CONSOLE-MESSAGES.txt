@@ -1,0 +1,53 @@
+HOW TO GET RID OF THE FOLLOWING TWO MESSAGES FROM THE CONSOLE:
+
+
+     *HZS0003E CHECK(IBMXCF,XCF_CDS_SPOF):
+     *IXCH0242E One or more couple data sets have a single point of failure.
+     
+     *HZS0003E CHECK(IBMRACF,RACF_SENSITIVE_RESOURCES):
+     *IRRH204E The RACF_SENSITIVE_RESOURCES check has found one or
+     *more potential errors in the security controls on this system.
+
+
+
+1. EDIT SYS1.PARMLIB(HZSPRM00)
+
+
+
+2. ADD THE FOLLOWING TO THE BOTTOM OF THE FILE AND SAVE
+
+000098 ADDREPLACE POLICY                                                 
+000099 UPDATE    CHECK(IBMXCF,XCF_CDS_SPOF)                              
+000100           INACTIVE                                                
+000101           REASON('do not need in hobbyist standalone system')     
+000102           DATE('20250609')                                        
+000103 ADDREPLACE POLICY                                                 
+000104 UPDATE    CHECK(IBMRACF,RACF_SENSITIVE_RESOURCES)                 
+000105           INACTIVE                                                
+000106           REASON('hobbyists do not care so much about this')      
+000107           DATE('20250609')                                        
+
+
+
+3.  EDIT SYS1.PROCLIB(HZSPROC)
+
+
+
+4.  CHANGE THE FOLLLOWING LINE AND SAVE:
+
+000084 //HZSPROC  PROC HZSPRM='PREV'
+
+TO BE:
+
+000084 //HZSPROC  PROC HZSPRM='00'
+
+
+
+5.  RE-IPL
+
+
+
+ref1: https://share.confex.com/share/121/webprogram/Handout/Session13938/SHARE_HC_LAB_2013_Boston.pdf
+ref2: https://colinpaice.blog/2024/01/22/z-os-health-checker-understanding-and-configuring-it/
+
+

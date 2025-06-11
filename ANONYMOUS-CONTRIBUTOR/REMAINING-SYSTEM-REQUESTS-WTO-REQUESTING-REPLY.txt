@@ -1,53 +1,23 @@
-HOW TO GET RID OF THE FOLLOWING TWO MESSAGES FROM THE CONSOLE:
+REMAINING SYSTEM REQUESTS (WTO REQUESTING REPLY)
 
 
-     *HZS0003E CHECK(IBMXCF,XCF_CDS_SPOF):
-     *IXCH0242E One or more couple data sets have a single point of failure.
-     
-     *HZS0003E CHECK(IBMRACF,RACF_SENSITIVE_RESOURCES):
-     *IRRH204E The RACF_SENSITIVE_RESOURCES check has found one or
-     *more potential errors in the security controls on this system.
+     *0003 DSI802A CNM01    REPLY WITH VALID NCCF
+     * SYSTEM OPERATOR COMMAND
+
+see the following discussions on the topic - (it has been around decades and lots of people hate it):
+https://www.mail-archive.com/search?l=ibm-main@listserv.ua.edu&q=subject:%22Re%5C%3A+WTOR+interactions+%5C%28was%5C%3A+Best+way+to+alert+customer+...%5C%3F%5C%29%22&o=newest&f=1
+https://www.mail-archive.com/search?l=ibm-main@listserv.ua.edu&q=subject:%22Best+way+to+alert+customer+to+pending+license+expiration%5C%3F%22&o=newest&f=1
+https://www.mail-archive.com/search?l=ibm-main@listserv.ua.edu&q=subject:%22WTO+for+message+that+will+require+explicit+deletion%5C%3F%22&o=newest&f=1
 
 
+     *0008 DFS996I *IMS READY*  IVP1
 
-1. EDIT SYS1.PARMLIB(HZSPRM00)
-
-
-
-2. ADD THE FOLLOWING TO THE BOTTOM OF THE FILE AND SAVE
-
-000098 ADDREPLACE POLICY                                                 
-000099 UPDATE    CHECK(IBMXCF,XCF_CDS_SPOF)                              
-000100           INACTIVE                                                
-000101           REASON('do not need in hobbyist standalone system')     
-000102           DATE('20250609')                                        
-000103 ADDREPLACE POLICY                                                 
-000104 UPDATE    CHECK(IBMRACF,RACF_SENSITIVE_RESOURCES)                 
-000105           INACTIVE                                                
-000106           REASON('hobbyists do not care so much about this')      
-000107           DATE('20250609')                                        
+see the following (this is a way that IMS uses to communicate - again, been around decades):
+https://www.ibm.com/docs/en/ims/15.4.0?topic=commands-outstanding-reply-numbers-zos-consoles
+https://www.ibm.com/docs/en/ims/15.4.0?topic=overview-how-enter-ims-commands
 
 
 
-3.  EDIT SYS1.PROCLIB(HZSPROC)
+     *15.20.45 VS01 STC00024 *ALL DEFINED SUBSYSTEMS HAVE BEEN STARTED
 
-
-
-4.  CHANGE THE FOLLLOWING LINE AND SAVE:
-
-000084 //HZSPROC  PROC HZSPRM='PREV'
-
-TO BE:
-
-000084 //HZSPROC  PROC HZSPRM='00'
-
-
-
-5.  RE-IPL
-
-
-
-ref1: https://share.confex.com/share/121/webprogram/Handout/Session13938/SHARE_HC_LAB_2013_Boston.pdf
-ref2: https://colinpaice.blog/2024/01/22/z-os-health-checker-understanding-and-configuring-it/
-
-
+- this is nice to know.  This is what you are hoping for

@@ -1,0 +1,16 @@
+//ALLOCCPT JOB NOTIFY=&SYSUID                         
+//ALLOCAT  EXEC PGM=IEFBR14                           
+//CHECK2  DD DSN=VSPROV.VS01.HASCKPT2,UNIT=3390,      
+//           VOL=SER=STGVS1,DISP=(NEW,KEEP),          
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,        
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0) 
+//NEWCK1  DD DSN=VSPROV.VS01.NEWCKPT1,UNIT=3390,      
+//           VOL=SER=STGVS1,DISP=(NEW,KEEP),          
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,        
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0) 
+//NEWCK2  DD DSN=VSPROV.VS01.NEWCKPT2,UNIT=3390,      
+//           VOL=SER=JCKVS1,DISP=(NEW,KEEP),          
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,        
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0) 
+/*                                                    
+//                                                    

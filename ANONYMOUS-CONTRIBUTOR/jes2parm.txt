@@ -1,0 +1,120 @@
+NOLOG                                                                           
+ /*******************************************************************/          
+ /* NOTE:  CHANGING ANY OF THE FOLLOWING PARAMETERS WILL PREVENT A  */          
+ /*        JES2 WARMSTART;  THEY CAN ONLY BE CHANGED ON A COLDSTART */          
+ /*                                                                 */          
+ /* CKPTDEF   DSNAME=                                               */          
+ /* JOBDEF    JOBNUM=                                               */          
+ /* NJEDEF    OWNNODE=                                              */          
+ /* OUTDEF    JOENUM=                                               */          
+ /* SPOOLDEF  BUFSIZE=, DSNAME=, RECINCR=, SPOOLNUM=, TGNUM=,       */          
+ /*           TRKCELL=, VOLUME=                                     */          
+ /*                                                                 */          
+ /*******************************************************************/          
+                                                                                
+NJEDEF OWNNODE=1                                                                
+                                                                                
+CKPTDEF CKPT1=(DSN=VSPROV.VS01.HASCKPT1,VOL=&J2CKVL1.,INUSE=YES),               
+        CKPT2=(DSN=VSPROV.VS01.HASCKPT2,VOL=STGVS1,INUSE=YES),     
+        NEWCKPT1=(DSN=VSPROV.VS01.NEWCKPT1,VOL=STGVS1),            
+        NEWCKPT2=(DSN=VSPROV.VS01.NEWCKPT2,VOL=&J2CKVL1.),          
+        MODE=DUPLEX,                                               
+        DUPLEX=ON,                                                 
+        LOGSIZE=1,
+        OPVERIFY=NO    
+                                                                                
+MASDEF  SHARED=NOCHECK,                                                         
+        LOCKOUT=3000,                                                           
+        DORMANCY=(0,3000),                                                      
+        HOLD=0,                                                                 
+        SYNCTOL=300,                                                            
+        AUTOEMEM=ON                                                             
+                                                                                
+/* ---------------------------------------------------------------  */          
+/* - To delete a system name, change its NAME=Pxx to NAME=          */          
+/* - To add a system name, change a NAME= to NAME=Pxx               */          
+/* - To rename a system name, change a NAME=Pxx to NAME=Pyy         */          
+/*                                                                  */          
+/* Renames & deletes require that system to be inactive.            */          
+/*                                                                  */          
+/* Actions take place at the next JES2 initialization (no cmds).    */          
+/*                                                                  */          
+/* You will get a WTOR for each add/delete/rename and must reply.   */          
+/*                                                                  */          
+/* ---------------------------------------------------------------  */          
+                                                                                
+MEMBER(01) NAME=&SYSNAME.                                                       
+MEMBER(02) NAME=                                                                
+MEMBER(03) NAME=                                                                
+MEMBER(04) NAME=                                                                
+MEMBER(05) NAME=                                                                
+MEMBER(06) NAME=                                                                
+MEMBER(07) NAME=                                                                
+MEMBER(08) NAME=                                                                
+MEMBER(09) NAME=                                                                
+MEMBER(10) NAME=                                                                
+MEMBER(11) NAME=                                                                
+MEMBER(12) NAME=                                                                
+MEMBER(13) NAME=                                                                
+MEMBER(14) NAME=                                                                
+MEMBER(15) NAME=                                                                
+MEMBER(16) NAME=                                                                
+MEMBER(17) NAME=                                                                
+MEMBER(18) NAME=                                                                
+MEMBER(19) NAME=                                                                
+MEMBER(20) NAME=                                                                
+MEMBER(21) NAME=                                                                
+MEMBER(22) NAME=                                                                
+MEMBER(23) NAME=                                                                
+MEMBER(24) NAME=                                                                
+MEMBER(25) NAME=                                                                
+MEMBER(26) NAME=                                                                
+MEMBER(27) NAME=                                                                
+MEMBER(28) NAME=                                                                
+MEMBER(29) NAME=                                                                
+MEMBER(30) NAME=                                                                
+MEMBER(31) NAME=                                                                
+MEMBER(32) NAME=                                                                
+                                                                                
+SPOOLDEF BUFSIZE=3992,        /* MAXIMUM BUFFER SIZE                */          
+         DSNAME=VSPROV.VS01.HASPACE,  /* SPOOL DATA SET'S NAME      */          
+         FENCE=NO,            /* DON'T FORCE TO MINIMUM VOL.        */          
+         LARGEDS=ALLOWED,     /* ALLOW MORE THAN 64K TRKS/VOL       */          
+         SPOOLNUM=32,         /* MAXIMUM NUMBER OF SPOOL VOLUMES    */          
+         TGSPACE=(MAX=500000), /*TRACK GROUPS/BLOB                  */          
+         TGSIZE=36,           /* BUFFERS/TRACK GROUP                */          
+         TGWARN=90,           /* WARNING THRESHOLD                  */          
+         TRKCELL=3,           /* BUFFERS/TRACK-CELL                 */          
+         VOLUME=&J2SPVL.      /* SPOOL VOLUME SERIAL                */          
+                                                                                
+/******************************************************************             
+*  JOBCLASS Definitions                                                         
+*******************************************************************/            
+JOBCLASS(A) COMMAND=DISPLAY                                                     
+                                                                                
+/******************************************************************             
+*  Dynamic PROCLIB Concatenation                                                
+*******************************************************************/            
+PROCLIB(PROC00) DD(1)=(DSN=K2.PROCLIB),                                         
+                DD(2)=(DSN=SYS1.PROCLIB,UNIT=SYSALLDA,                          
+                        VOLSER=OPEVS1),                                         
+                DD(3)=(DSN=SYS1.PROCLIB.INSTALL,UNIT=SYSALLDA,                  
+                        VOLSER=&SYSR1.)                                         
+PROCLIB(PROC01) DD(1)=(DSN=K2.PROCLIB),                                         
+                DD(2)=(DSN=SYS1.PROCLIB.INSTALL,UNIT=SYSALLDA,                  
+                        VOLSER=&SYSR1.)                                         
+                                                                                
+/******************************************************************             
+*  Displays, MVS commands (COMMNDx too early), JES2 auto-cmds.                  
+*******************************************************************/            
+                                                                                
+DISPLAY SPOOLDEF DSNAME,VOLUME                                                  
+DISPLAY CKPTDEF  CKPT1                                                          
+$D JOBDEF                                                                       
+$D MR0,'EHK602I : JES2 IS NOW ACCEPTING COMMANDS'                               
+$VS,'WRITELOG START'                                                            
+/*  Begin Ansible insert 1 */                                                   
+INITDEF PARTNUM=10                                                              
+OUTDEF JOENUM=9999                                                              
+JOBDEF JOBNUM=3000                                                              
+/*  End Ansible insert 1 */                                                     

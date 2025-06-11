@@ -1,0 +1,183 @@
+   IPCSEMNSEMS(32767)                                                
+   IPCSHMMPAGES(2621440)                                              
+   IPCSHMSPAGES(2621440)                                              
+   MAXASSIZE(536870912)                                        
+   MAXCPUTIME(2147483647)                                         
+   MAXFILEPROC(64000)                                                 
+   MAXPROCSYS(1500)                                                   
+   MAXPROCUSER(1250)                                                  
+   MAXPTYS(256)                                                       
+   MAXSHAREPAGES(2000000)                                             
+   MAXTHREADS(10000)                                                  
+   MAXTHREADTASKS(1500)                                               
+   MAXUIDS(200)                                                       
+   SHRLIBRGNSIZE(1610612736)                                          
+                                                                      
+   CTRACE(CTIBPX00)                                                   
+   FORKCOPY(COPY)                                                     
+   RESOLVER_PROC(RESOLVER)                                            
+   SYSPLEX(NO)                                                        
+                                                                      
+   FILESYSTYPE TYPE(TFS)  ENTRYPOINT(BPXTFS)                          
+                                                                      
+   FILESYSTYPE TYPE(ZFS) ENTRYPOINT(IOEFSCM)                          
+               ASNAME(ZFS,'SUB=MSTR')                                 
+               PARM('PRM=(&IOEPRM.)')                                 
+                                                                      
+   FILESYSTYPE TYPE(UDS)  ENTRYPOINT(BPXTUINT)                        
+                                                                      
+   FILESYSTYPE TYPE(AUTOMNT) ENTRYPOINT(BPXTAMD)                      
+                                                                      
+   FILESYSTYPE TYPE(NFS) ENTRYPOINT(GFSCINIT) ASNAME(MVSNFSC)         
+                                                                      
+   FILESYSTYPE TYPE(DSFS) ENTRYPOINT(IDFFSCM) ASNAME(DSFS,'SUB=MSTR') 
+               PARM('PRM=(&IDFPRM.)')                                 
+                                                                     
+   NETWORK DOMAINNAME(AF_UNIX) DOMAINNUMBER(1) MAXSOCKETS(10000)      
+           TYPE(UDS)                                                  
+                                                                      
+   FILESYSTYPE TYPE(INET) ENTRYPOINT(EZBPFINI)                        
+   NETWORK DOMAINNAME(AF_INET) DOMAINNUMBER(2) MAXSOCKETS(35000)      
+           TYPE(INET) INADDRANYPORT(6000) INADDRANYCOUNT(1000)        
+                                                                      
+/********************************************************************/
+/* System File Systems                                              */
+/********************************************************************/
+                                                                      
+   ROOT  FILESYSTEM('OMVS.VS01.ROOT.ZFS')                             
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.FONTS.ZFS')                            
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/fonts')                                 
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.ETC.ZFS')                              
+         TYPE(ZFS)                                                    
+         MODE(RDWR)                                                   
+         MOUNTPOINT('/etc')                                           
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.VAR.ZFS')                              
+         TYPE(ZFS)                                                    
+         MODE(RDWR)                                                   
+         MOUNTPOINT('/var')                                           
+         UNMOUNT                                                     
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.VARWBEM.ZFS')                        
+         TYPE(ZFS)                                                    
+         MODE(RDWR)                                                   
+         MOUNTPOINT('/var/wbem')                                      
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.DEV.ZFS')                             
+         TYPE(ZFS)                                                    
+         MODE(RDWR)                                                   
+         MOUNTPOINT('/dev')                                          
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('/TMP&SYSNAME.')                                  
+         TYPE(TFS)                                                   
+         MOUNTPOINT('/tmp')                                          
+         PARM('-s 1000 -p 1777')                                      
+         UNMOUNT                                                      
+                                                                     
+   MOUNT FILESYSTEM('OMVS.VS01.WLP.ZFS')                              
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                  
+         MOUNTPOINT('/usr/lpp/liberty_zos')                           
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.ZCX.ZFS')                              
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/zcx_zos')                               
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.SIZUUSRD.ZFS')                         
+         TYPE(ZFS)                                                    
+         MODE(RDWR)                                                   
+         MOUNTPOINT('/global/zosmf')                                  
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.SSH.ZFS')                              
+         TYPE(ZFS)                                                    
+         MODE(RDWR)                                                   
+         MOUNTPOINT('/etc/ssh')                                       
+         UNMOUNT                                                     
+                                                                      
+   MOUNT FILESYSTEM('OMVS.VS01.UTILITY.DSFS')                         
+         TYPE(DSFS)                                                   
+         MOUNTPOINT('/dsfs')                                          
+         MODE(RDWR)                                                   
+                                                                      
+/********************************************************************/
+/* Program Product File Systems                                     */
+/********************************************************************/
+                                                                      
+   MOUNT FILESYSTEM('EF.V1R2M0.ZFS')                                 
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/encryptionfacility')                    
+         UNMOUNT                                                      
+                                                                     
+   MOUNT FILESYSTEM('JAVA.V8R0M0.ZFS')                               
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/java/java8')                            
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('JAVA.V11R0M0.ZFS')                               
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/java/java11')                          
+         UNMOUNT                                                      
+                                                                     
+   MOUNT FILESYSTEM('JAVA.V17R0M0.ZFS')                               
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/java/java17')                           
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('IGY.V6R4M0.ZFS')                                 
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/IBM/cobol/igyv6r4')                     
+         UNMOUNT                                                     
+                                                                      
+   MOUNT FILESYSTEM('NETVIEW.V6R4M0.ZFS')                             
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/netview/v6r4')                          
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('PLI.V6R1M0.ZFS')                                 
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                 
+         MOUNTPOINT('/usr/lpp/IBM/pli/v6r1')                          
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('PYTHON.V3R9M0.ZFS')                              
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                  
+         MOUNTPOINT('/usr/lpp/IBM/cyp/v3r9')                         
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('PYTHON.V3R11M0.ZFS')                             
+         TYPE(ZFS)                                                    
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/IBM/cyp/v3r11')                         
+         UNMOUNT                                                      
+                                                                      
+   MOUNT FILESYSTEM('SA.V4R3M0.ZFS')                                  
+         TYPE(ZFS)                                                   
+         MODE(READ)                                                   
+         MOUNTPOINT('/usr/lpp/ing')                                   
+         UNMOUNT                                                      
+                                                                      
+/*   MOUNT FILESYSTEM('ZOAU.V1R1M0.ZFS')                            */
+/*         TYPE(ZFS)                                                */
+/*         MODE(READ)                                               */
+/*         MOUNTPOINT('/usr/lpp/IBM/zoautil')                       */
+/*         UNMOUNT                                                  */

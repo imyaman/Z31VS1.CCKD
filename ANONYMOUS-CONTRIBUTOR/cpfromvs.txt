@@ -1,0 +1,30 @@
+CONTROL NOCAPS
+OGETX '/u/ibmuser/uploads/alloccpt.txt' 'IBMUSER.JCL(ALLOCCPT)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/jes2parm.txt' 'K2.PARMLIB(JES2PARM)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/crtdump.txt' 'IBMUSER.JCL(CRTDUMP)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/deldumps.txt' 'IBMUSER.JCL(DELDUMPS)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/smfprm00.txt' 'SYS1.PARMLIB(SMFPRM00)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/hzsproc.txt' 'SYS1.PROCLIB(HZSPROC)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/hzsprm00.txt' 'SYS1.PARMLIB(HZSPRM00)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/bpxprm00.txt' 'SYS1.PARMLIB(BPXPRM00)' TEXT -
+CONVERT(YES)
+OGETX '/u/ibmuser/uploads/dellog.txt' 'IBMUSER.JCL(DELLOG)' TEXT -    
+CONVERT(YES)                                                          
+OGETX '/u/ibmuser/uploads/alloclog.txt' 'IBMUSER.JCL(ALLOCLOG)' TEXT -
+CONVERT(YES)                                                         
+OGETX '/u/ibmuser/uploads/cpfromvs.txt' 'IBMUSER.JCL(CPFROMVS)' TEXT -
+CONVERT(YES)                                                         
+OGETX '/u/ibmuser/uploads/cptoomvs.txt' 'IBMUSER.JCL(CPTOOMVS)' TEXT -
+CONVERT(YES) 
+SUBMIT 'IBMUSER.JCL(ALLOCCPT)' 
+SUBMIT 'IBMUSER.JCL(DELDUMPS)' 
+SUBMIT 'IBMUSER.JCL(CRTDUMP)' 
+SUBMIT 'IBMUSER.JCL(DELLOG)' 
+SUBMIT 'IBMUSER.JCL(ALLOCLOG)' 

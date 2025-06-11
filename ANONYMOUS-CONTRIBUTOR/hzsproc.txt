@@ -1,0 +1,90 @@
+//HZSPROC JOB JESLOG=SUPPRESS                                      
+//****************************************************************/
+//*                                                              */
+//* STARTUP PROC FOR IBM HEALTH CHECKER FOR Z/OS                 */
+//*                                                              */
+//* PROPRIETARY STATEMENT:                                       */
+//*                                                              */
+//*     LICENSED MATERIALS - PROPERTY OF IBM                     */
+//*     5650-ZOS                                                 */
+//*     COPYRIGHT IBM CORP. 2005,2017                            */
+//*     STATUS = HBB77B0                                         */
+//*                                                              */
+//* IBM HEALTH CHECKER FOR Z/OS IS STARTED AUTOMATICALLY BY THE  */
+//* SYSTEM AT IPL TIME, USING THE PROCEDURE NAMED BY SYSTEM      */
+//* VALUE HZSPROC. THE SYSTEM VALUE DEFAULTS TO 'HZSPROC'.       */
+//*                                                              */
+//* FOR ADDITIONAL SETUP INFORMATION PLEASE ALSO SEE THE         */
+//* IBM HEALTH CHECKER FOR Z/OS USER'S GUIDE (SC23-6843).        */
+//*                                                              */
+//* TO MANUALLY (RE-)START THE IBM HEALTH CHECKER FOR Z/OS,      */
+//* FOR EXAMPLE AFTER STOPPING IT TO APPLY SERVICE,              */
+//* ISSUE CMD                                                    */
+//*  S HZSPROC,HZSPRM=x1                                         */
+//* OR                                                           */
+//*  S HZSPROC,HZSPRM=(x1,...,xn)                                */
+//* OR                                                           */
+//*  S HZSPROC,HZSPRM=SYSPARM                                    */
+//* OR                                                           */
+//*  S HZSPROC,HZSPRM=PREV                                       */
+//* OR                                                           */
+//*  S HZSPROC,HZSPRM=NONE                                       */
+//*                                                              */
+//* WHERE xn IS THE SUFFIX OF A SYS1.PARMLIB MEMBER NAMED        */
+//* HZSPRMxn.                                                    */
+//*                                                              */
+//* SPECIAL VALUE SYSPARM TELLS THE SYSTEM TO USE THE HZSPRMXX   */
+//* SUFFIX LIST AS SPECIFIED VIA SYSTEM PARAMETER HZS.           */
+//*                                                              */
+//* SPECIAL VALUE PREV    TELLS THE SYSTEM TO USE THE HZSPRMXX   */
+//* SUFFIX LIST THAT WAS IN EFFECT FOR THE PREVIOUSLY ACTIVE     */
+//* HEALTH CHECKER INSTANCE. IF THERE IS NO PREVIOUS INSTANCE    */
+//* PREV WILL BE THE SAME AS SYSPARM.                            */
+//*                                                              */
+//* SPECIAL VALUE NONE    TELLS THE SYSTEM TO INITIALLY NOT USE  */
+//* ANY HZSPRMXX MEMBERS.                                        */
+//*                                                              */
+//* IF THIS HZSPROC IS INVOKED WITHOUT THE HZSPRM PARAMETER      */
+//*  S HZSPROC                                                   */
+//* THE DEFAULT HZSPRM=PREV VALUE IS USED.                       */
+//*                                                              */
+//* SEE SYS1.PARMLIB(HZSPRM00) FOR A SAMPLE OF OPTIONS           */
+//* WHICH CAN BE SPECIFIED IN A HZSPRMXX member.                 */
+//*                                                              */
+//* THE HZSPRM PARAMETER ALSO ALLOWS TO OVERRIDE THE DEFAULT     */
+//* CHOICE OF CTIHZS00 FOR CTRACE OPTIONS BY ACCEPTING AN        */
+//* ALTERNATE SUFFIX: ...,CTRACE=XX,...                          */
+//*                                                              */
+//* THE HZSPDATA DD CAN BE USED TO SPECIFY WHICH DATASET IS      */
+//* USED TO MAINTAIN PERSISTENT DATA, AN OPTIONAL FEATURE FOR    */
+//* INDIVIDUAL HEALTH CHECKS, ACROSS IPLS ETC.                   */
+//*                                                              */
+//* HZSPDATA NEEDS TO BE ALLOCATED AS A NEW FB SEQUENTIAL        */
+//* DATA SET WITH AN LRECL OF 4096.  A UNIQUE DATA SET           */
+//* NAME SHOULD BE PROVIDED ON EACH SYSTEM.                      */
+//*                                                              */
+//* SYS1.SAMPLIB(HZSALLCP) SHOULD BE USED TO ALLOCATE THE        */
+//* DATASET AND CREATE THE END OF FILE MARK.                     */
+//*                                                              */
+//* ONCE ALLOCATED SPECIFY IT VIA AN HZSPDATA DD IN THIS         */
+//* PROCEDURE OR, AS AN ALTERNATIVE, HAVE AN HZSPRMXX MEMBER     */
+//* WHICH USES THE HZSPDATA STATEMENT INSTEAD.                   */
+//*                                                              */
+//* THE SYSTEM WILL SEARCH THE LINKLIST AND LPALIB FOR HEALTH    */
+//* CHECK ROUTINES AND MESSAGE TABLES, SO NO EXPLICIT STEPLIB    */
+//* SHOULD BE REQUIRED.                                          */
+//*                                                              */
+//* CHANGE-ACTIVITY:                                             */
+//*  $L0=HZSCHECK HZS7720,040821, PDZJ: HEALTH CHECKER           */
+//*  $L1=HCAUTOST HBB7790,111205, RDUT: SYSPARM,PREV,HZSPDATA    */
+//*  $L2=HCAUTOST HBB7790,120207, RDUT: NONE,PREV DEFAULT        */
+//*  $L3=HCV2R3   HBB77B0,150909, RDUT: HZSPDATA,CTRACE DETAILS  */
+//*                                                              */
+//****************************************************************/
+//HZSPROC  PROC HZSPRM='00'                                        
+//HZSSTEP  EXEC   PGM=HZSINIT,REGION=0K,TIME=NOLIMIT,             
+//      PARM='SET PARMLIB=&HZSPRM'                                
+//STEPLIB DD DSNAME=CICSTS61.CICS.SDFHLINK,DISP=SHR 
+//HZSPDATA DD   DSN=SYS1.&SYSNAME..HZSPDATA,DISP=OLD              
+//        PEND                                                     
+//        EXEC HZSPROC                                         

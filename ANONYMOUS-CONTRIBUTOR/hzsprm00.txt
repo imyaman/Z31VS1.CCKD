@@ -1,0 +1,107 @@
+/* ---------------------------------------------------------------- */
+/*                                                                  */
+/*   LICENSED MATERIALS - PROPERTY OF IBM                           */
+/*   5694-A01                                                       */
+/*   COPYRIGHT IBM CORP. 2004, 2013                                 */
+/*                                                                  */
+/* Statements in HZSPRMxx parmlib members can be used to:           */
+/* - specify a POLICY to change the default behavior of target      */
+/*   health checks                                                  */
+/* - enable LOGSTREAM processing for an extended check history      */
+/* - specify a data set which allows to persist check data across   */
+/*   IPLs                                                           */
+/*                                                                  */
+/* For a complete syntax of those statements and other commands     */
+/* see the IBM Health Checker for z/OS User's Guide                 */
+/*                                                                  */
+/* ---------------------------------------------------------------- */
+/*                                                                  */
+/* LOGGER=ON,LOGSTREAMNAME=HZSlogstream                             */
+/*                                                                  */
+/*   can be used to enable log stream processing to the specified   */
+/*   log stream                                                     */
+/*                                                                  */
+/* HZSPDATA=dsn ,VOLUME=volser                                      */
+/*                                                                  */
+/*   can be used to specify a persistent data data set, optionally  */
+/*   qualified by the volume it resides on.                         */
+/*   This is an alternative to the HZSPDATA DD statement in the     */
+/*   HZSPROC procedure used to start Health Checker.                */
+/*                                                                  */
+/* {ADD | ADDREPLACE},POLICY,STATEMENT=statementname,UPDATE,filters,*/
+/*        update_options,REASON=(reason text),DATE=yyyymmdd         */
+/*                                                                  */
+/*   can be used to define policy statements that modify the        */
+/*   behavior of specified checks.                                  */
+/*                                                                  */
+/* Where                                                            */
+/*   ADD -     This is a new policy statement that is not active.   */
+/*             If the named policy statement is already active, the */
+/*             new policy statement is rejected.                    */
+/*   ADDREPLACE - The specified policy statement may already be     */
+/*             active.                                              */
+/*             If the policy statement is already active, the       */
+/*             existing policy statement is replaced.               */
+/*   statementname - 1-16 character policy statement name used to   */
+/*             identify the policy statement.                       */
+/*   UPDATE -  Indicates the policy statement overrides check       */
+/*             defaults                                             */
+/*   filters - Filters that indicate which check(s) are targeted by */
+/*             this policy statement:                               */
+/*             CHECK(owner,name) - (Required.) The 1-6 character    */
+/*                                 check owner, and 1-32 character  */
+/*                                 check name.  Wild card symbols   */
+/*                                 '*' and '%' are permitted.       */
+/*              CATEGORY( filter_type,  category-1 ,category-2 ...) */
+/*                Allows additional filter capacity based on the    */
+/*                current assigned categories                       */
+/*              EXITRTN=exitrtn  - The name of the HZSADDCHECK      */
+/*                                 dynamic exit routine that was    */
+/*                                 used to add the check.           */
+/*   Update_options- The options used to override the check         */
+/*             defaults:                                            */
+/*              ,ACTIVE|INACTIVE                                    */
+/*                Indicates the target check(s) are ACTIVE or       */
+/*                INACTIVE.                                         */
+/*              ,ADDCAT=(cat1,...,cat16)                            */
+/*                Add the target check(s) to the specified          */
+/*                categories                                        */
+/*              ,DESCCODE=(desccode1,...,desccode#)                 */
+/*                Additional descriptor code(s) which will be used  */
+/*                when an exception message is written by the       */
+/*                target check(s)                                   */
+/*              ,{INTERVAL=ONETIME|INTERVAL=hhh:mm}                 */
+/*                The interval at which the target check(s) will    */
+/*                be run.                                           */
+/*              ,PARM=parameter                                     */
+/*                The check specific parameter that will be passed  */
+/*                to the target check.                              */
+/*              ,ROUTCODE=(routcode1 ,..,routcode# )                */
+/*                Additional route code(s) which will be used when  */
+/*                an exception message is written by the target     */
+/*                check(s)                                          */
+/*              ,SEVERITY={HIGH|MEDIUM|LOW|NONE}                    */
+/*                The severity of target check(s)                   */
+/*              ,WTOTYPE={CRITICAL|EVENTUAL|                        */
+/*                        INFORMATIONAL|HARDCOPY|NONE}              */
+/*                Specifies what message will be used when an       */
+/*                exception message is written by the target        */
+/*                check(s).  Note: If WTOTYPE is not specified,     */
+/*                the message is determined by the check severity.  */
+/*             ...more (see the User's Guide)                       */
+/*   REASON -  1-126 character reason that documents why the policy */
+/*             statement statement was added to HZSPRMxx.           */
+/*   DATE   -  (yyyymmdd) The date when the policy statement was    */
+/*             added to HZSPRMxx.                                   */
+/*                                                                  */
+/* ---------------------------------------------------------------- */
+ADDREPLACE POLICY                                                 
+UPDATE    CHECK(IBMXCF,XCF_CDS_SPOF)                              
+          INACTIVE                                                
+          REASON('do not need in hobbyist standalone system')     
+          DATE('20250609')                                        
+ADDREPLACE POLICY                                                 
+UPDATE    CHECK(IBMRACF,RACF_SENSITIVE_RESOURCES)                 
+          INACTIVE                                                
+          REASON('hobbyists do not care so much about this')      
+          DATE('20250609')                                        

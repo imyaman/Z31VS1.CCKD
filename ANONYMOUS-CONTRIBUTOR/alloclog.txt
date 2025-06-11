@@ -1,0 +1,12 @@
+//ALLOCLOG  JOB NOTIFY=&SYSUID               
+//ALLOCAT   EXEC PGM=IEFBR14                               
+//LOGREC    DD DSN=VSPROV.VS01.LOGREC,UNIT=3390,           
+//             VOL=SER=OPEVS1,DISP=(NEW,CATLG),            
+//             SPACE=(CYL,100),                            
+//             DSORG=PSU,DCB=(RECFM=U,LRECL=0,BLKSIZE=1944)
+//REINIT    EXEC PGM=IFCDIP00                              
+//SERERDS   DD DSN=VSPROV.VS01.LOGREC,UNIT=3390,           
+//             VOL=SER=OPEVS1,DISP=SHR                     
+//SYSPRINT  DD SYSOUT=H                                    
+/*                                                         
+//                                                   

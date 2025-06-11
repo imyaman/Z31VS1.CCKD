@@ -1,0 +1,28 @@
+//CRTDUMP1 JOB NOTIFY=&SYSUID
+//ALLOCATE EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+   DEFINE CLUSTER(NAME(SYS1.VS01.MAN3)                                 -
+                  VOLUME(OPEVS1)                                       -
+                  CYLINDERS(100)                                       -
+                  CONTROLINTERVALSIZE(4096)                            -
+                  RECORDSIZE(4086,32767)                               -
+                  SHAREOPTIONS(2)                                      -
+                  NONINDEXED                                           -
+                  SPANNED                                              -
+                  SPEED                                                -
+                  STORAGECLASS(SCNOSMS)                                -
+                  REUSE)
+   DEFINE CLUSTER(NAME(SYS1.VS01.MAN4)                                 -
+                  VOLUME(OPEVS1)                                       -
+                  CYLINDERS(100)                                       -
+                  CONTROLINTERVALSIZE(4096)                            -
+                  RECORDSIZE(4086,32767)                               -
+                  SHAREOPTIONS(2)                                      -
+                  NONINDEXED                                           -
+                  SPANNED                                              -
+                  SPEED                                                -
+                  STORAGECLASS(SCNOSMS)                                -
+                  REUSE)
+/*
+//

@@ -1,0 +1,7 @@
+000010 CONTROL NOCAPS                                            
+000100 OPUTX 'SYS1.PARMLIB(BPXPRM00)' '/u/ibmuser/downloads' -   
+000200 CONVERT(YES) LC SUFFIX(txt)                               
+000300 OPUTX 'K2.PARMLIB(JES2PARM)' '/u/ibmuser/downloads' -     
+000400 CONVERT(YES) LC SUFFIX(txt)                               
+000500 OPUTX 'SYS1.PARMLIB(SMFPRM00)' '/u/ibmuser/downloads' -   
+000600 CONVERT(YES) LC SUFFIX(txt)                               

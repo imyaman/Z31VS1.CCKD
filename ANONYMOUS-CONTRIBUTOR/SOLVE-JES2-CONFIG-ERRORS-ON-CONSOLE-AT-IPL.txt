@@ -46,23 +46,25 @@ General Data                          Current Allocation
 
 ENTER AND RUN THIS JCL:   (I COULDN'T FIGURE OUT HOW TO SUCCESSFULLY GET THE DSORG TO BE PSU - SO USING PS - WORKS FINE)
 
-//ALLOCATE JOB  'ALLOC CKPT',MSGLEVEL=(1,1),             
-//   CLASS=A,MSGCLASS=H,NOTIFY=&SYSUID,REGION=0M
-//ALLOCAT  EXEC PGM=IEFBR14
-//CHECK2   DD   DSN=VSPROV.VS01.HASCKPT2,UNIT=3390,
-//              VOL=SER=STGVS1,DISP=(NEW,KEEP),
-//              SPACE=(CYL,450),STORCLAS=SCNOSMS,
-//              DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0)
-//NEWCK1  DD DSN=VSPROV.VS01.NEWCKPT1,UNIT=3390,    
-//           VOL=SER=STGVS1,DISP=(NEW,KEEP),        
-//           SPACE=(CYL,450),STORCLAS=SCNOSMS,
-//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0)       
-//NEWCK2  DD DSN=VSPROV.VS01.NEWCKPT2,UNIT=3390,    
-//           VOL=SER=JCKVS1,DISP=(NEW,KEEP),        
-//           SPACE=(CYL,450),STORCLAS=SCNOSMS,       
-//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0)
-/*
-//
+
+//ALLOCCPT JOB NOTIFY=&SYSUID                         
+//ALLOCAT  EXEC PGM=IEFBR14                           
+//CHECK2  DD DSN=VSPROV.VS01.HASCKPT2,UNIT=3390,      
+//           VOL=SER=STGVS1,DISP=(NEW,KEEP),          
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,        
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0) 
+//NEWCK1  DD DSN=VSPROV.VS01.NEWCKPT1,UNIT=3390,      
+//           VOL=SER=STGVS1,DISP=(NEW,KEEP),          
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,        
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0) 
+//NEWCK2  DD DSN=VSPROV.VS01.NEWCKPT2,UNIT=3390,      
+//           VOL=SER=JCKVS1,DISP=(NEW,KEEP),          
+//           SPACE=(CYL,450),STORCLAS=SCNOSMS,        
+//           DSORG=PS,DCB=(RECFM=U,LRECL=0,BLKSIZE=0) 
+/*                                                    
+//                                                    
+
+
 
 =2 (EDIT)  DSNAME:  K2.PARMLIB(JES2PARM)
                                                
@@ -74,4 +76,6 @@ ENTER AND RUN THIS JCL:   (I COULDN'T FIGURE OUT HOW TO SUCCESSFULLY GET THE DSO
  000022         DUPLEX=ON,                                                 
  000023         LOGSIZE=1,
  000024         OPVERIFY=NO    
+
+--- RE-IPL TO PUT INTO EFFECT
                                                                                       

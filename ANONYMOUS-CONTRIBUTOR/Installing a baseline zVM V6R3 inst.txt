@@ -1,0 +1,88 @@
+Installing a baseline z/VM V6R3 instance from installation DVD
+--------------------------------------------------------------
+
+Notes....
+
+https://archive.org/details/zvm-v6r3
+
+https://web.archive.org/web/20170101114845/https://hercules-390.yahoogroups.narkive.com/8HHZb57r/z-vm-install-files-and-Hercules
+
+use latest Hercules SDL v4.8 
+
+/data/zvm63/zvm63.rc file contents:
+
+fac ena 129
+pause 3
+fac ena 054
+pause 3
+fac ena 130
+pause 3
+fac ena 134
+pause 3
+fac ena 135
+shcmdopt ENABLE
+
+
+/data/zvm63/zvm63.cnf file contents:
+
+ARCHMODE  z/Arch
+CNSLPORT 3271      # port to use for x3270 local connections
+CODEPAGE  DEFAULT
+CPUMODEL  8562     # CPU model number - Z15
+CPUSERIAL 02B7F8   # CPU serial number - Z15
+MODEL     T02 S03  # STSI returned Hardware model Capacity model - Z15
+CPUVERID  00
+ENGINES   CP
+LOG       /data/logzVM6302
+LOGOPT    TIMESTAMP
+LPARNAME  VS02
+MAINSIZE  12G
+MANUFACTURER IBM
+MAXCPU    8
+NUMCPU    6
+OSTAILOR  NONE
+PGMPRDOS  LICENSED
+PLANT     02
+SYSEPOCH  1900
+TZOFFSET  0
+TIMERINT 1200
+CONKPALV (3,1,10)
+
+0100 3390 /data/zvm63/630RES_1.100
+0101 3390 /data/zvm63/630W01_1.101
+0102 3390 /data/zvm63/630W02_1.102
+0103 3390 /data/zvm63/630W03_1.103
+0104 3390 /data/zvm63/630SPL_1.104
+0105 3390 /data/zvm63/630P01_1.105
+0106 3390 /data/zvm63/VMCOM1_1.106
+0107 3390 /data/zvm63/VMCOM2_1.107
+0108 3390 /data/zvm63/630RL1_1.108
+0109 3390 /data/zvm63/630RL2_1.109
+
+1500.3 QETH ifname tun0 ipaddr 192.168.100.2 netmask 255.255.255.0 hwaddr 02-00-00-11-10-05 mtu 1500 chpid F0
+
+0000    SYSG  * 127.0.0.1     # this is the key that allows local DVD access
+0020    3270
+0200    3270
+0201    3270
+0202    3270
+0203    3270
+
+script /data/zvm63/zvm63.rc
+
+---------------------------------------------------------------------------------
+
+1.  Mount the DVD on a Linux loopback device # mount -loop,ro zvm630.iso /mnt
+
+2.  with dasdinit, make all of the 3390 CKD DASD devices 100 through 109 that are listed in the .cnf file (ex: # dasdinit /data/zvm63/630RES.100 3390-9 630RES  )
+
+3.  start Hercules with the parameters above (ex. # hercules -f /data/zvm63/zvm63.cnf --rcfile=/data/zvm63/zvm63.rc --verbose)
+
+4.  start two TN3270 terminals listening on the TCP/IP loopback (127.0.0.1) on port 3271
+
+5.  in Hercules:  ipl /mnt/cpdvd/630vm.ins
+
+6.  follow  z/VM v6.3 Installation Guide chapters 7 & 9
+	https://publibfp.dhe.ibm.com/epubs/pdf/hcsk2c20.pdf
+
+

@@ -1,0 +1,205 @@
+Installing a baseline z/VSE V6R1 instance from installation AWS tapes
+---------------------------------------------------------------------
+
+Notes....
+
+https://archive.org/details/zvse-610-en-ga
+
+use latest Hercules SDL v4.8 
+
+
+/data/zvse61/zvse61.cnf file contents:
+
+ARCHMODE z/Arch
+CNSLPORT 3271      # port to use for x3270 local connections
+CODEPAGE  DEFAULT
+CPUMODEL  2827     # CPU model number - Z12
+CPUSERIAL 02B7F8   # CPU serial number - Z15
+MODEL     T02 S03  # STSI returned Hardware model Capacity model - Z15
+CPUVERID  00
+ENGINES   CP
+LOADPARM  I        # key to make IPL properly from AWS tape and use Hercules console
+LOG       /data/zvse61/logzVSE
+LOGOPT    TIMESTAMP
+LPARNAME  VS02
+MAINSIZE  4G
+MANUFACTURER IBM
+MAXCPU    8
+NUMCPU    2
+OSTAILOR  z/VSE
+PGMPRDOS  LICENSED
+PLANT     02
+SYSEPOCH  1900
+TZOFFSET  +0100
+TIMERINT 1200
+CONKPALV (3,1,10)
+
+0060    3270
+0061    3270
+0062    3270
+
+0150  3390  /data/zvse61/DOSRES_1.CKD
+0151  3390  /data/zvse61/SYSWK1_1.CKD
+
+0181    3590  /data/zvse61/VSE610EN_GA_20151016.AWS
+0182    3590  /data/zvse61/VSE610EXT_20150929.AWS
+0183    3590  /data/zvse61/VSE610OP1_20150929.AWS
+0184    3590  /data/zvse61/VSE610OP2_20150929.AWS
+0185    3590  /data/zvse61/VSE610OP3_20150929.AWS
+0186    3590  /data/zvse61/VSE610OP4_20150929.AWS
+
+
+---------------------------------------------------------------------------------
+
+Note:  I chose not to configure TCP/IP in this write up.  I had multiple problems with it and I am wondering if the license code provided in the tcpip.txt file is not valid for this setup.  Hopefully someone will work on getting this working and share the writeup.
+
+
+1.  with dasdinit, make both of the 3390 CKD DASD devices 150 (DOSRES) and 151 (SYSWK1) that are listed in the .cnf file (ex: # dasdinit /data/zse61/DOSRES.CKD 3390-9 DOSRES  )
+
+2.  start Hercules with the parameters above (ex. # hercules -f /data/zvse61/zvse61.cnf )
+
+3.  start three TN3270 terminals listening on the TCP/IP loopback (127.0.0.1) on port 3271
+
+4.  in Hercules:  ipl 181       (the installer will send output to the Hercules console rather than a 3270 device)
+
+5.  To respond to the installer in the Hercules console window, preface the answer with a period and a zero for the WTO number
+      (ex.    .0 YES   )  --- these are called SCP commands in the installation log
+
+6.  follow  IBM z/VSE Version 6 Release 2 Installation Guide  (also reference my SCP command responses in the installation log)
+
+	https://publibfp.dhe.ibm.com/epubs/pdf/iesist91.pdf
+
+	to complete installation login on one of the 3270 terminals with this:
+   	USER-ID........ POST
+	PASSWORD....... BASE
+
+	other pre-defined logins and passwords found in table on page 90
+
+			
+
+My answers to the installer:
+
+BG 0000 SI01D DO YOU WANT TO DO AN AUTOMATIC INSTALLATION (YES/NO)?
+BG-0000 
+HHC00160I SCP command: 0 YES
+0 YES
+
+BG 0000 SA02D IF YOU WANT A LISTING, SPECIFY PCUU OF PRINTER, ELSE (ENTER)
+BG-0000 
+HHC00160I SCP command: 0
+0
+
+BG 0000 SI70D IF YOU WANT TO INSTALL VSE ON SCSI SPECIFY YES, ELSE NO
+BG-0000 
+HHC00160I SCP command: 0 NO
+0 NO
+
+BG 0000 SI02D ENTER PCUU OF DOSRES 
+BG-0000 
+HHC00160I SCP command: 0 0150
+0 0150
+
+BG 0000 SI03D ENTER PCUU OF SYSWK1 
+BG-0000 
+HHC00160I SCP command: 0 0151
+0 0151
+
+BG 0000 SI08I DOSRES IS 150, DEVICE TYPE ECKD  
+BG 0000 SI09I SYSWK1 IS 151, DEVICE TYPE ECKD  
+BG 0000 SI10D START WITH AUTOMATIC INSTALLATION (YES/NO)?
+BG-0000 
+HHC00160I SCP command: 0 YES
+0 YES
+
+BG 0000 IESI0051D DO YOU WANT TO CONFIGURE TCP/IP DURING INITIAL STARTUP? 
+YES/NO  
+BG-0000 
+HHC00160I SCP command: 0 NO
+0 NO
+
+BG 0000 IESI0078D SELECT AN ENVIRONMENT OUT OF A (SMALL), B (MEDIUM) OR C 
+(LARGE).  
+BG-0000 
+HHC00160I SCP command: 0 C
+0 C
+
+BG 0000 IESI0079D DO YOU WANT TO RUN YOUR SYSTEM WITH SECURITY ON? YES/NO  
+BG-0000 
+HHC00160I SCP command: 0 NO
+0 NO
+
+BG 0000 IESI0062D CHECK YOUR ANSWERS. DO YOU WANT TO CONTINUE? YES/NO  
+BG-0000 
+HHC00160I SCP command: 0 YES
+0 YES
+
+BG 0000 IESI0065D IS THE LOCAL CONTROL UNIT AN SNA CU? YES/NO  
+BG-0000 
+HHC00160I SCP command: 0 NO
+0 NO
+
+BG 0000 IESI0064I DEFINE UP TO 3 LOCAL VTAM TERMINALS  
+BG 0000 IESI0059D ENTER A 3270 ADDRESS (PCUU) OR "END"  
+BG-0000 
+HHC00160I SCP command: 0 0060
+0 0060
+
+BG 0000 IESI0059D ENTER A 3270 ADDRESS (PCUU) OR "END"  
+BG-0000 
+HHC00160I SCP command: 0 0061
+0 0061
+
+BG 0000 IESI0059D ENTER A 3270 ADDRESS (PCUU) OR "END"  
+BG-0000 
+HHC00160I SCP command: 0 0062
+0 0062
+
+BG 0000 IESI0062D CHECK YOUR ANSWERS. DO YOU WANT TO CONTINUE? YES/NO  
+BG-0000 
+HHC00160I SCP command: 0 YES
+0 YES
+
+BG 0000 *  EXECUTE THE PROCEDURE FOR THE FORMS CONTROL BUFFER THAT YOU
+BG 0000 *  WANT LOADED INTO YOUR PRINTER OR IF NOT REQUIRED EXECUTE THE
+BG 0000 *  PROCEDURE FOR THE CHARACTER SET BUFFER YOU WANT LOADED INTO
+BG 0000 *  YOUR PRINTER. IF NEITHER IS REQUIRED REPLY "0 (END/ENTER)".
+BG-0000 // PAUSE
+HHC00160I SCP command: 0
+0
+
+BG 0000 *  BASE INSTALL PROCESSING IS NOW FINISHED. COMPLETION OF THE
+BG 0000 *
+BG 0000 *  INSTALL PROCESS MUST BE PERFORMED USING THE VSE DIALOGS
+BG 0000 *
+BG 0000 EOJ CLEANUP   MAX.RETURN CODE=0000
+         DATE 05/11/2026, CLOCK 10/46/56, DURATION   00/00/00
+BG 0001 1Q34I   BG WAITING FOR WORK
+HHC00160I SCP command: MSG F2,data='CEMT P SHUT I'
+MSG F2,data='CEMT P SHUT I'
+
+F2 0001 1Q34I   F2 WAITING FOR WORK
+HHC00160I SCP command: z net,quick
+z net,quick
+
+F3 0003 IST984I USER EXIT ISTEXCSD IS INACTIVE
+HHC00160I SCP command: pend
+pend
+
+FB-0011 1C10D  PLEASE ASSIGN SYSRDR.
+HHC00160I SCP command: 0 rod
+0 rod
+
+BG-0000 1I90D  END OF DAY = 
+HHC00160I SCP command: 0 Y
+0 Y
+
+exit
+
+On subsequent startup of Hercules, after starting 3 3270 termninals, just issue:  ipl 150
+this will ipl from the DOSRES & SYSWK1 that you setup in the installation.
+
+
+Plug for an instructional videos on z/VSE Basics:  
+https://www.youtube.com/watch?v=zJFAiAH-F8g
+https://www.youtube.com/watch?v=g2jzyyzqHxg&list=PLM5r-PFDuqKC1oQAa8g2v1_0eKY2vOhRt&index=8
+https://www.youtube.com/watch?v=3ynKOt-NNhs&list=PLM5r-PFDuqKC1oQAa8g2v1_0eKY2vOhRt&index=7
